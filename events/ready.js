@@ -7,6 +7,14 @@ module.exports = {
   async execute(client) {
     console.log(`✅ Logged in as ${client.user.tag}`);
 
+    try {
+    const channel = await client.channels.fetch('1388892461455249521');
+    await channel.setName(`Test Rename ${Date.now()}`);
+    console.log('Rename success');
+  } catch (err) {
+    console.error('Rename failed:', err);
+  }
+
     // Load and schedule jobs
     const jobsPath = path.join(__dirname, '../jobs');
     const jobFiles = fs.readdirSync(jobsPath).filter(file => file.endsWith('.js'));
