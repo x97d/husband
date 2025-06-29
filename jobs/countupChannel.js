@@ -51,10 +51,10 @@ module.exports = {
   schedule(client) {
     console.log('📆 Starting multiple count-up channel job');
 
-    // 🔄 Run immediately on start
+    // Run immediately on bot startup
     countups.forEach(entry => updateChannelName(client, entry));
 
-    // 🕛 Schedule to run every day at 12:00 AM
+    // Schedule daily updates at midnight
     cron.schedule('0 0 * * *', () => {
       countups.forEach(entry => updateChannelName(client, entry));
     });
