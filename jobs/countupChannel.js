@@ -32,7 +32,7 @@ async function updateChannelName(client, { channelId, startDate, label }) {
 
   try {
     const channel = await client.channels.fetch(channelId);
-    console.log(`Channel fetched: ID=${channel.id}, Type=${channel.type}, Name=${channel.name}`);
+    console.log(`Channel fetched: Name=${channel.name}`);
 
     if (!channel) {
       console.error(`❌ Channel not found: ${channelId}`);
