@@ -1,17 +1,10 @@
-const { SlashCommandBuilder } = require('discord.js');
-
 module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('ping')
-    .setDescription('Replies with the bot latency and API latency.'),
-
-  name: 'ping', // <-- Required if your bot loads using this field
-  async execute(interaction) {
-    const sent = await interaction.reply({ content: 'Pinging...', fetchReply: true });
-
-    const botLatency = sent.createdTimestamp - interaction.createdTimestamp;
-    const apiLatency = Math.round(interaction.client.ws.ping);
-
-    await interaction.editReply(`🏓 Pong!\nBot Latency: ${botLatency}ms\nAPI Latency: ${apiLatency}ms`);
+  name: 'ping',
+  description: 'Replies with the bot latency and API latency.',
+  async execute(message, args, client) {
+    const sent = await message.channel.send('Pinging...');
+    const latency = sent.createdTimestamp - message.createdTimestamp;
+    const apiPing = Math.round(client.ws.ping);
+    sent.edit(`🏓 Pong!\nBot Latency: ${latency}ms\nAPI Latency: ${apiPing}ms`);
   }
 };
