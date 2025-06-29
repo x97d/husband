@@ -15,15 +15,11 @@ const countups = [
   },
 ];
 
-function calculateDayCount() {
+function calculateDayCount(startDate) {
   const now = new Date();
 
-  // Normalize both dates to start of day (midnight)
-  const startDay = new Date(
-    START_DATE.getFullYear(),
-    START_DATE.getMonth(),
-    START_DATE.getDate(),
-  );
+  // Normalize both dates to midnight (local time)
+  const startDay = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   const diffTime = today.getTime() - startDay.getTime();
