@@ -4,7 +4,8 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('ping')
     .setDescription('Replies with the bot latency and API latency.'),
-  
+
+  name: 'ping', // <-- Required if your bot loads using this field
   async execute(interaction) {
     const sent = await interaction.reply({ content: 'Pinging...', fetchReply: true });
 
