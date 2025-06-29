@@ -1,17 +1,17 @@
 const cron = require('node-cron');
 const { ChannelType } = require('discord.js');
 
-// ✅ List of count-up channels
+// List of count-up channels to update
 const countups = [
   {
-    channelId: '1386357384045269082', // Replace with real channel ID
+    channelId: '1386357384045269082', // Your first channel ID
     startDate: new Date('2024-06-22'),
-    label: 'Together'
+    label: 'Together',
   },
   {
-    channelId: '1388892461455249521', // Example second channel
+    channelId: '1388892461455249521', // Your second channel ID
     startDate: new Date('2025-06-05'),
-    label: 'Married'
+    label: 'Married',
   },
 ];
 
@@ -24,7 +24,6 @@ function calculateDayCount(startDate) {
 
   const diffTime = today.getTime() - startDay.getTime();
 
-  // Floor the difference to get full days passed, no +1
   return Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
 }
 
@@ -33,9 +32,17 @@ async function updateChannelName(client, { channelId, startDate, label }) {
 
   try {
     const channel = await client.channels.fetch(channelId);
-    if (!channel || (channel.type !== ChannelType.GuildVoice && channel.type !== ChannelType.GuildText)) {
-      console.error(`❌ Invalid channel type for ID: ${channelId}`);
+    console.log(`Channel fetched: ID=${channel.id}, Type=${channel.type}, Name=${channel.name}`);
+
+    if (!channel) {
+      console.error(`❌ Channel not found: ${channelId}`);
       return;
+    }
+
+    // You can comment out this check for debugging if needed
+    if (channel.type !== ChannelType.GuildText && channel.type !== ChannelType.GuildVoice) {
+      console.warn(`⚠️ Channel type not supported for rename: ${channel.type}`);
+      // return; // Uncomment if you want to block unsupported types
     }
 
     const newName = `🗓️ Day ${days} ${label}`;
@@ -43,6 +50,17 @@ async function updateChannelName(client, { channelId, startDate, label }) {
     console.log(`✅ Updated channel (${channelId}) to: ${newName}`);
   } catch (err) {
     console.error(`❌ Failed to update channel ${channelId}:`, err);
+  }
+}
+
+// Optional: Test renaming a channel once on bot ready
+async function testRename(client, channelId) {
+  try {
+    const channel = await client.channels.fetch(channelId);
+    await channel.setName(`🧪 Test Rename ${Date.now()}`);
+    console.log(`Successfully renamed channel ${channelId} (test rename)`);
+  } catch (err) {
+    console.error(`Failed test rename for channel ${channelId}:`, err);
   }
 }
 
@@ -54,9 +72,13 @@ module.exports = {
     // Run immediately on bot startup
     countups.forEach(entry => updateChannelName(client, entry));
 
+    // Run a test rename on second channel to troubleshoot (optional)
+    // Uncomment below line to run test rename once on startup
+    // testRename(client, '1388892461455249521');
+
     // Schedule daily updates at midnight
     cron.schedule('0 0 * * *', () => {
       countups.forEach(entry => updateChannelName(client, entry));
     });
-  }
+  },
 };
