@@ -6,19 +6,19 @@ const COUNTDOWNS = [
   {
     name: 'Cody Flies',
     date: new Date('2025-07-25'),
-    channelId: '1363961717104840785',
+    channelId: '1386363914513813645',
     emoji: '✈️'
   },
   {
     name: 'Finish Work',
     date: new Date('2025-07-24'),
-    channelId: '1345850539035852911',
+    channelId: '1386363902400663582',
     emoji: '🏢'
   },
   {
     name: 'Move In',
     date: new Date('2025-07-30'),
-    channelId: '1365092582824349776',
+    channelId: '1386363926341746769',
     emoji: '🏡'
   }
 ];
@@ -27,7 +27,7 @@ const COUNTDOWNS = [
 function getDaysRemaining(targetDate) {
   const now = new Date();
   const diff = targetDate.getTime() - now.getTime();
-  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)) - 1);
 }
 
 // 🔁 Update all countdowns

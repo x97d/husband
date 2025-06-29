@@ -6,8 +6,19 @@ const CHANNEL_ID = '1386357384045269082';
 
 function calculateDayCount() {
   const now = new Date();
-  const diffTime = now.getTime() - START_DATE.getTime();
-  return Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+  // Normalize both dates to start of day (midnight)
+  const startDay = new Date(
+    START_DATE.getFullYear(),
+    START_DATE.getMonth(),
+    START_DATE.getDate(),
+  );
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const diffTime = today.getTime() - startDay.getTime();
+
+  // Floor the difference to get full days passed, no +1
+  return Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
 }
 
 async function updateChannelName(client) {
