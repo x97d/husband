@@ -4,7 +4,10 @@ module.exports = {
   async execute(message, args, client) {
     const sent = await message.channel.send('Pinging...');
     const latency = sent.createdTimestamp - message.createdTimestamp;
-    const apiPing = Math.round(client.ws.ping);
-    sent.edit(`🏓 Pong!\nBot Latency: ${latency}ms\nAPI Latency: ${apiPing}ms`);
+    const apiPing = client.ws.ping;
+
+    const apiLatencyDisplay = apiPing >= 0 ? `${Math.round(apiPing)}ms` : 'Unknown';
+
+    sent.edit(`🏓 Pong!\nBot Latency: ${latency}ms\nAPI Latency: ${apiLatencyDisplay}`);
   }
 };
