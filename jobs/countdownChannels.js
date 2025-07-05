@@ -4,6 +4,12 @@ const { ChannelType } = require('discord.js');
 // 🎯 Define each countdown target and channel
 const COUNTDOWNS = [
   {
+    name: 'Cody Checkin',
+    date: new Date('2025-07-22'),
+    channelId: '1390991160272617522',
+    emoji: '✈️'
+  },
+  {
     name: 'Cody Flies',
     date: new Date('2025-07-25'),
     channelId: '1386363914513813645',
