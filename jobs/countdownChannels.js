@@ -29,79 +29,45 @@ const COUNTDOWNS = [
   }
 ];
 
-// 🧮 Calculate remaining time (to 00:00 of target day)
-function getTimeRemaining(targetDate) {
+// 🔢 Calculate remaining days
+function getDaysRemaining(targetDate) {
   const now = new Date();
-
-  // Target at START of day (00:00:00)
-  const target = new Date(
-    targetDate.getFullYear(),
-    targetDate.getMonth(),
-    targetDate.getDate(),
-    0, 0, 0
-  );
-
-  const diff = target.getTime() - now.getTime();
-
-  if (diff <= 0) {
-    return null; // already today or past
-  }
-
-  const totalHours = Math.floor(diff / (1000 * 60 * 60));
-  const days = Math.floor(totalHours / 24);
-  const hours = totalHours % 24;
-
-  return { days, hours };
+  const diff = targetDate.getTime() - now.getTime();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)) - 1);
 }
 
-// 🔁 Update all countdown channels
+// 🔁 Update all countdowns
 async function updateCountdowns(client) {
-  console.log('🔄 Running updateCountdowns...');
-
   for (const countdown of COUNTDOWNS) {
-    console.log(`⏳ Updating countdown: ${countdown.name}`);
+    const daysRemaining = getDaysRemaining(countdown.date);
+
+    const newName = `${countdown.emoji} ${daysRemaining} Day${daysRemaining !== 1 ? 's' : ''} - ${countdown.name}`;
 
     try {
       const channel = await client.channels.fetch(countdown.channelId);
-      if (!channel) {
-        console.error(`❌ Channel not found: ${countdown.channelId} (${countdown.name})`);
+      if (!channel || (channel.type !== ChannelType.GuildVoice && channel.type !== ChannelType.GuildText)) {
+        console.error(`❌ Invalid channel type for ${countdown.name}`);
         continue;
       }
 
-      if (channel.type !== ChannelType.GuildVoice && channel.type !== ChannelType.GuildText) {
-        console.error(`❌ Invalid channel type for ${countdown.name}: ${channel.type}`);
-        continue;
-      }
-
-      const remaining = getTimeRemaining(countdown.date);
-      const newName = !remaining
-        ? `🎉 Today! - ${countdown.name}`
-        : `${countdown.emoji} ${remaining.days}d ${remaining.hours}h - ${countdown.name}`;
-
-      if (channel.name === newName) {
-        console.log(`ℹ️ Channel "${countdown.name}" name is already up to date: "${newName}"`);
-      } else {
-        await channel.setName(newName);
-        console.log(`✅ Updated ${countdown.name} channel to "${newName}"`);
-      }
+      await channel.setName(newName);
+      console.log(`✅ Updated ${countdown.name} channel to "${newName}"`);
     } catch (err) {
       console.error(`❌ Error updating ${countdown.name} channel:`, err);
     }
   }
 }
 
-
-// 🗓️ Schedule the job
 module.exports = {
   name: 'countdownChannels',
   schedule(client) {
     console.log('📅 Starting countdown channels job');
 
-    // Run immediately when bot starts
+    // ✅ Run immediately on bot start
     updateCountdowns(client);
 
-    // Then run hourly, at minute 0
-    cron.schedule('0 * * * *', () => {
+    // 🕛 Then run daily at 12:00 AM
+    cron.schedule('0 0 * * *', () => {
       updateCountdowns(client);
     });
   }
