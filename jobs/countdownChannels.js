@@ -63,13 +63,10 @@ async function updateCountdowns(client) {
 
     try {
       const channel = await client.channels.fetch(countdown.channelId);
-
       if (!channel) {
         console.error(`❌ Channel not found: ${countdown.channelId} (${countdown.name})`);
         continue;
       }
-
-      console.log(`🔍 Found channel "${channel.name}" of type ${channel.type}`);
 
       if (channel.type !== ChannelType.GuildVoice && channel.type !== ChannelType.GuildText) {
         console.error(`❌ Invalid channel type for ${countdown.name}: ${channel.type}`);
@@ -77,20 +74,22 @@ async function updateCountdowns(client) {
       }
 
       const remaining = getTimeRemaining(countdown.date);
-      let newName;
-      if (!remaining) {
-        newName = `🎉 Today! - ${countdown.name}`;
-      } else {
-        newName = `${countdown.emoji} ${remaining.days}d ${remaining.hours}h - ${countdown.name}`;
-      }
+      const newName = !remaining
+        ? `🎉 Today! - ${countdown.name}`
+        : `${countdown.emoji} ${remaining.days}d ${remaining.hours}h - ${countdown.name}`;
 
-      await channel.setName(newName);
-      console.log(`✅ Updated ${countdown.name} channel to "${newName}"`);
+      if (channel.name === newName) {
+        console.log(`ℹ️ Channel "${countdown.name}" name is already up to date: "${newName}"`);
+      } else {
+        await channel.setName(newName);
+        console.log(`✅ Updated ${countdown.name} channel to "${newName}"`);
+      }
     } catch (err) {
       console.error(`❌ Error updating ${countdown.name} channel:`, err);
     }
   }
 }
+
 
 // 🗓️ Schedule the job
 module.exports = {
