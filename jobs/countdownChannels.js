@@ -29,22 +29,22 @@ const COUNTDOWNS = [
   }
 ];
 
-// 🧮 Calculate remaining time (days, hours)
+// 🧮 Calculate remaining time (to 00:00 of target day)
 function getTimeRemaining(targetDate) {
   const now = new Date();
 
-  // Target at END of day (23:59:59)
+  // Target at START of day (00:00:00)
   const target = new Date(
     targetDate.getFullYear(),
     targetDate.getMonth(),
     targetDate.getDate(),
-    23, 59, 59
+    0, 0, 0
   );
 
   const diff = target.getTime() - now.getTime();
 
   if (diff <= 0) {
-    return { days: 0, hours: 0 };
+    return null; // already today or past
   }
 
   const totalHours = Math.floor(diff / (1000 * 60 * 60));
@@ -59,14 +59,20 @@ async function updateCountdowns(client) {
   for (const countdown of COUNTDOWNS) {
     const remaining = getTimeRemaining(countdown.date);
 
-    const newName =
-      `${countdown.emoji} ` +
-      `${remaining.days}d ${remaining.hours}h - ${countdown.name}`;
+    let newName;
+
+    if (!remaining) {
+      newName = `🎉 Today! - ${countdown.name}`;
+    } else {
+      newName =
+        `${countdown.emoji} ` +
+        `${remaining.days}d ${remaining.hours}h - ${countdown.name}`;
+    }
 
     try {
       const channel = await client.channels.fetch(countdown.channelId);
 
-      if (!channel || 
+      if (!channel ||
         (channel.type !== ChannelType.GuildVoice && channel.type !== ChannelType.GuildText)) {
         console.error(`❌ Invalid channel type for ${countdown.name}`);
         continue;
