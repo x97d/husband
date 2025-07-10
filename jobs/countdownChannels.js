@@ -29,46 +29,23 @@ const COUNTDOWNS = [
   }
 ];
 
-// 🧮 Calculate remaining time (days, hours, minutes)
-function getTimeRemaining(targetDate) {
+// 🔢 Calculate remaining days
+function getDaysRemaining(targetDate) {
   const now = new Date();
-
-  // Target at END of day (23:59:59)
-  const target = new Date(
-    targetDate.getFullYear(),
-    targetDate.getMonth(),
-    targetDate.getDate(),
-    23, 59, 59
-  );
-
-  const diff = target.getTime() - now.getTime();
-
-  if (diff <= 0) {
-    return { days: 0, hours: 0, minutes: 0 };
-  }
-
-  const totalMinutes = Math.floor(diff / (1000 * 60));
-  const days = Math.floor(totalMinutes / (60 * 24));
-  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
-  const minutes = totalMinutes % 60;
-
-  return { days, hours, minutes };
+  const diff = targetDate.getTime() - now.getTime();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)) - 1);
 }
 
-// 🔁 Update all countdown channels
+// 🔁 Update all countdowns
 async function updateCountdowns(client) {
   for (const countdown of COUNTDOWNS) {
-    const remaining = getTimeRemaining(countdown.date);
+    const daysRemaining = getDaysRemaining(countdown.date);
 
-    const newName =
-      `${countdown.emoji} ` +
-      `${remaining.days}d ${remaining.hours}h ${remaining.minutes}m - ${countdown.name}`;
+    const newName = `${countdown.emoji} ${daysRemaining} Day${daysRemaining !== 1 ? 's' : ''} - ${countdown.name}`;
 
     try {
       const channel = await client.channels.fetch(countdown.channelId);
-
-      if (!channel || 
-        (channel.type !== ChannelType.GuildVoice && channel.type !== ChannelType.GuildText)) {
+      if (!channel || (channel.type !== ChannelType.GuildVoice && channel.type !== ChannelType.GuildText)) {
         console.error(`❌ Invalid channel type for ${countdown.name}`);
         continue;
       }
@@ -81,17 +58,16 @@ async function updateCountdowns(client) {
   }
 }
 
-// 🗓️ Schedule the job
 module.exports = {
   name: 'countdownChannels',
   schedule(client) {
     console.log('📅 Starting countdown channels job');
 
-    // Run immediately when bot starts
+    // ✅ Run immediately on bot start
     updateCountdowns(client);
 
-    // Then run hourly, at minute 0
-    cron.schedule('0 * * * *', () => {
+    // 🕛 Then run daily at 12:00 AM
+    cron.schedule('0 0 * * *', () => {
       updateCountdowns(client);
     });
   }
