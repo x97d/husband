@@ -61,25 +61,27 @@ async function updateCountdowns(client) {
   for (const countdown of COUNTDOWNS) {
     console.log(`⏳ Updating countdown: ${countdown.name}`);
 
-    const remaining = getTimeRemaining(countdown.date);
-
-    let newName;
-
-    if (!remaining) {
-      newName = `🎉 Today! - ${countdown.name}`;
-    } else {
-      newName =
-        `${countdown.emoji} ` +
-        `${remaining.days}d ${remaining.hours}h - ${countdown.name}`;
-    }
-
     try {
       const channel = await client.channels.fetch(countdown.channelId);
 
-      if (!channel ||
-        (channel.type !== ChannelType.GuildVoice && channel.type !== ChannelType.GuildText)) {
-        console.error(`❌ Invalid channel type for ${countdown.name}`);
+      if (!channel) {
+        console.error(`❌ Channel not found: ${countdown.channelId} (${countdown.name})`);
         continue;
+      }
+
+      console.log(`🔍 Found channel "${channel.name}" of type ${channel.type}`);
+
+      if (channel.type !== ChannelType.GuildVoice && channel.type !== ChannelType.GuildText) {
+        console.error(`❌ Invalid channel type for ${countdown.name}: ${channel.type}`);
+        continue;
+      }
+
+      const remaining = getTimeRemaining(countdown.date);
+      let newName;
+      if (!remaining) {
+        newName = `🎉 Today! - ${countdown.name}`;
+      } else {
+        newName = `${countdown.emoji} ${remaining.days}d ${remaining.hours}h - ${countdown.name}`;
       }
 
       await channel.setName(newName);
