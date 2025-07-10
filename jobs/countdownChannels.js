@@ -56,12 +56,14 @@ function getTimeRemaining(targetDate) {
 
 // 🔁 Update all countdown channels
 async function updateCountdowns(client) {
+  console.log('🔄 Running updateCountdowns...');
+
   for (const countdown of COUNTDOWNS) {
+    console.log(`⏳ Updating countdown: ${countdown.name}`);
+
     const remaining = getTimeRemaining(countdown.date);
 
     let newName;
-
-    console.log(`${countdown.name} - ${remaining}`)
 
     if (!remaining) {
       newName = `🎉 Today! - ${countdown.name}`;
