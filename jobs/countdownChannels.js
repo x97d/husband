@@ -29,7 +29,7 @@ const COUNTDOWNS = [
   }
 ];
 
-// 🧮 Calculate remaining time (days, hours, minutes)
+// 🧮 Calculate remaining time (days, hours)
 function getTimeRemaining(targetDate) {
   const now = new Date();
 
@@ -44,15 +44,14 @@ function getTimeRemaining(targetDate) {
   const diff = target.getTime() - now.getTime();
 
   if (diff <= 0) {
-    return { days: 0, hours: 0, minutes: 0 };
+    return { days: 0, hours: 0 };
   }
 
-  const totalMinutes = Math.floor(diff / (1000 * 60));
-  const days = Math.floor(totalMinutes / (60 * 24));
-  const hours = Math.floor((totalMinutes % (60 * 24)) / 60);
-  const minutes = totalMinutes % 60;
+  const totalHours = Math.floor(diff / (1000 * 60 * 60));
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
 
-  return { days, hours, minutes };
+  return { days, hours };
 }
 
 // 🔁 Update all countdown channels
@@ -62,7 +61,7 @@ async function updateCountdowns(client) {
 
     const newName =
       `${countdown.emoji} ` +
-      `${remaining.days}d ${remaining.hours}h ${remaining.minutes}m - ${countdown.name}`;
+      `${remaining.days}d ${remaining.hours}h - ${countdown.name}`;
 
     try {
       const channel = await client.channels.fetch(countdown.channelId);
