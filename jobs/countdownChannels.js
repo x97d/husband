@@ -61,6 +61,8 @@ async function updateCountdowns(client) {
 
     let newName;
 
+    console.log(`${countdown.name} - ${remaining}`)
+
     if (!remaining) {
       newName = `🎉 Today! - ${countdown.name}`;
     } else {
