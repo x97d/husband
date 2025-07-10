@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 
+const countdownChannels = require('./jobs/countdownChannels');
+
 module.exports = {
   name: 'ready',
   once: true,
@@ -17,6 +19,8 @@ module.exports = {
         job.schedule(client);
       }
     }
+
+    countdownChannels.schedule(client);
 
     console.log('🛠️ All scheduled jobs initialized.');
   }
