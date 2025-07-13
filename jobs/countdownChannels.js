@@ -79,7 +79,7 @@ module.exports = {
     updateCountdowns(client);
 
     // 🕛 Then run daily at 12:00 AM
-    cron.schedule('0 0 * * *', () => {
+    cron.schedule('0 * * * *', () => {
       updateCountdowns(client);
     });
   }
