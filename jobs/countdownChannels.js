@@ -36,12 +36,24 @@ function getDaysRemaining(targetDate) {
   return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)) - 1);
 }
 
+function getTimeRemaining(targetDate) {
+  const now = new Date();
+  const diffMs = targetDate.getTime() - now.getTime();
+
+  const totalHours = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60)));
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+
+  return { days, hours };
+}
+
 // 🔁 Update all countdowns
 async function updateCountdowns(client) {
   for (const countdown of COUNTDOWNS) {
     const daysRemaining = getDaysRemaining(countdown.date);
+    const remaining = getTimeRemaining(countdown.date);
 
-    const newName = `${countdown.emoji} ${daysRemaining} Day${daysRemaining !== 1 ? 's' : ''} - ${countdown.name}`;
+    const newName = `${countdown.emoji} ${remaining.days}d ${remaining.hours}h - ${countdown.name}`;
 
     try {
       const channel = await client.channels.fetch(countdown.channelId);
