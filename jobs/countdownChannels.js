@@ -53,7 +53,11 @@ async function updateCountdowns(client) {
     const daysRemaining = getDaysRemaining(countdown.date);
     const remaining = getTimeRemaining(countdown.date);
 
-    const newName = `${countdown.emoji} ${remaining.days}d ${remaining.hours}h - ${countdown.name}`;
+    if(remaining.hours == 0) {
+      const newName = `${countdown.emoji} ${remaining.days} days - ${countdown.name}`;
+    } else {
+      const newName = `${countdown.emoji} ${remaining.days}d ${remaining.hours}h - ${countdown.name}`;
+    }
 
     try {
       const channel = await client.channels.fetch(countdown.channelId);
