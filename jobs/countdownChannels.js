@@ -56,6 +56,16 @@ async function updateCountdowns(client) {
         continue;
       }
 
+      // If days = 0 but hours > 0
+      if (remaining.days === 0 && remaining.hours > 0) {
+        newName = `${countdown.emoji} ${remaining.hours}hours - ${countdown.name}`;
+      }
+
+      // If days = 0 and hours = 0
+      if (remaining.days === 0 && remaining.hours === 0) {
+        newName = `${countdown.emoji} NOW - ${countdown.name}`;
+      }
+
       await channel.setName(newName);
       console.log(`✅ Updated ${countdown.name} channel to "${newName}"`);
     } catch (err) {
